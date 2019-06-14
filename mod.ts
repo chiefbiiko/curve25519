@@ -1,4 +1,3 @@
-import { SHA512 } from "./../sha512/mod.ts";
 import { compare, hex2bin } from "./utils.ts";
 
 /**

@@ -1,9 +1,11 @@
 import {
-  runTests,
-  test,
-  assert,
-  equal
+  runIfMain,
+  test
 } from "https://deno.land/x/testing/mod.ts";
+import {
+  assert,
+  assertEquals
+} from "https://deno.land/x/testing/asserts.ts";
 
 import { Curve25519 } from "./mod.ts";
 
@@ -25,6 +27,7 @@ test(function x25519() {
     curve: new Curve25519(),
     seed: new TextEncoder().encode("deadbeefdeadbeefdeadbeefdeadbeef")
   };
+  
   const b: party = {
     curve: new Curve25519(),
     seed: a.seed.map((byte: number) => byte - 1)
@@ -37,7 +40,7 @@ test(function x25519() {
   b.shared = b.curve.scalarMult(b.sk, a.pk);
   // assert same shared secret
   assert(!!a.shared && !!b.shared); // assert truthiness
-  equal(a.shared, b.shared);
+  assertEquals(a.shared, b.shared);
 });
 
-runTests();
+runIfMain(import.meta);
