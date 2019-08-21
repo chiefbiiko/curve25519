@@ -1,8 +1,17 @@
-import { compare, hex2bin } from "./utils.ts";
+import { encode } from "https://denopkg.com/chiefbiiko/std-encoding/mod.ts";
 
-/**
- * Curve25519 class
- */
+/** Hopefully a somewhat timing-attack-robust buffer equality check. */
+export function equal(a: Uint8Array, b: Uint8Array): boolean {
+  let diff: number = a.length === b.length ? 0 : 1;
+
+  for (let i: number = Math.max(a.length, b.length) - 1; i >= 0; --i) {
+    diff |= a[i] ^ b[i];
+  }
+
+  return diff === 0;
+}
+
+/** Curve25519 class. */
 export class Curve25519 {
   gf0: Int32Array;
   gf1: Int32Array;
@@ -12,15 +21,14 @@ export class Curve25519 {
   _9: Uint8Array;
   _121665: Int32Array;
 
-  /**
-   * Curve25519 ctor
-   */
+  /** Creates a curve25519. */
   constructor() {
     this.gf0 = this.gf();
     this.gf1 = this.gf([1]);
     this._9 = new Uint8Array(32);
     this._9[0] = 9;
     this._121665 = this.gf([0xdb41, 1]);
+
     this.D = this.gf([
       0x78a3,
       0x1359,
@@ -39,6 +47,7 @@ export class Curve25519 {
       0x6cee,
       0x5203
     ]);
+
     this.D2 = this.gf([
       0xf159,
       0x26b2,
@@ -57,6 +66,7 @@ export class Curve25519 {
       0xd9dc,
       0x2406
     ]);
+
     this.I = this.gf([
       0xa0b0,
       0x4a0e,
@@ -78,12 +88,12 @@ export class Curve25519 {
   }
 
   gf(init?: Array<number>): Int32Array {
-    let r = new Int32Array(16);
+    let r: Int32Array = new Int32Array(16);
+
     if (init) {
-      for (let i = 0; i < init.length; i++) {
-        r[i] = init[i];
-      }
+      r.set(init.slice(0, 16));
     }
+
     return r;
   }
 
@@ -611,11 +621,13 @@ export class Curve25519 {
     let i,
       v,
       c = 1;
+
     for (i = 0; i < 16; i++) {
       v = o[i] + c + 65535;
       c = Math.floor(v / 65536);
       o[i] = v - c * 65536;
     }
+
     o[0] += c - 1 + 37 * (c - 1);
   }
 
@@ -624,6 +636,7 @@ export class Curve25519 {
     let i,
       t,
       c = ~(b - 1);
+
     for (i = 0; i < 16; i++) {
       t = c & (p[i] ^ q[i]);
       p[i] ^= t;
@@ -634,15 +647,18 @@ export class Curve25519 {
   inv25519(o: Int32Array, i: Int32Array): void {
     let a,
       c = this.gf();
+
     for (a = 0; a < 16; a++) {
       c[a] = i[a];
     }
+
     for (a = 253; a >= 0; a--) {
       this.S(c, c);
       if (a !== 2 && a !== 4) {
         this.M(c, c, i);
       }
     }
+
     for (a = 0; a < 16; a++) {
       o[a] = c[a];
     }
@@ -651,26 +667,39 @@ export class Curve25519 {
   private neq25519(a: Int32Array, b: Int32Array): boolean {
     let c = new Uint8Array(32),
       d = new Uint8Array(32);
+
     this.pack25519(c, a);
     this.pack25519(d, b);
-    return !compare(c, d);
+
+    return !equal(c, d);
   }
 
   par25519(a: Int32Array): number {
     let d = new Uint8Array(32);
+
     this.pack25519(d, a);
+
     return d[0] & 1;
   }
 
   private pow2523(o: Int32Array, i: Int32Array): void {
     let a,
       c = this.gf();
-    for (a = 0; a < 16; a++) c[a] = i[a];
+
+    for (a = 0; a < 16; a++) {
+      c[a] = i[a];
+    }
+
     for (a = 250; a >= 0; a--) {
       this.S(c, c);
-      if (a !== 1) this.M(c, c, i);
+      if (a !== 1) {
+        this.M(c, c, i);
+      }
     }
-    for (a = 0; a < 16; a++) o[a] = c[a];
+
+    for (a = 0; a < 16; a++) {
+      o[a] = c[a];
+    }
   }
 
   cswap(p: Array<Int32Array>, q: Array<Int32Array>, b: number): void {
@@ -683,23 +712,32 @@ export class Curve25519 {
     let i,
       m = this.gf(),
       t = this.gf();
+
     for (i = 0; i < 16; i++) {
       t[i] = n[i];
     }
+
     this.car25519(t);
     this.car25519(t);
     this.car25519(t);
+
     for (let j = 0; j < 2; j++) {
       m[0] = t[0] - 0xffed;
+
       for (i = 1; i < 15; i++) {
         m[i] = t[i] - 0xffff - ((m[i - 1] >>> 16) & 1);
         m[i - 1] &= 0xffff;
       }
+
       m[15] = t[15] - 0x7fff - ((m[14] >>> 16) & 1);
+
       let b = (m[15] >>> 16) & 1;
+
       m[14] &= 0xffff;
+
       this.sel25519(t, m, 1 - b);
     }
+
     for (i = 0; i < 16; i++) {
       o[2 * i] = t[i] & 0xff;
       o[2 * i + 1] = t[i] >>> 8;
@@ -710,6 +748,7 @@ export class Curve25519 {
     for (let i = 0; i < 16; i++) {
       o[i] = n[2 * i] + (n[2 * i + 1] << 8);
     }
+
     o[15] &= 0x7fff;
   }
 
@@ -743,17 +782,24 @@ export class Curve25519 {
 
     this.S(chk, r[0]);
     this.M(chk, chk, den);
-    if (this.neq25519(chk, num)) this.M(r[0], r[0], this.I);
+
+    if (this.neq25519(chk, num)) {
+      this.M(r[0], r[0], this.I);
+    }
 
     this.S(chk, r[0]);
     this.M(chk, chk, den);
+
     if (this.neq25519(chk, num)) {
       return -1;
     }
 
-    if (this.par25519(r[0]) === p[31] >>> 7) this.Z(r[0], this.gf0, r[0]);
+    if (this.par25519(r[0]) === p[31] >>> 7) {
+      this.Z(r[0], this.gf0, r[0]);
+    }
 
     this.M(r[3], r[0], r[1]);
+
     return 0;
   }
 
@@ -767,6 +813,7 @@ export class Curve25519 {
     let x = new Int32Array(80),
       r,
       i;
+
     let a = this.gf(),
       b = this.gf(),
       c = this.gf(),
@@ -775,11 +822,14 @@ export class Curve25519 {
       f = this.gf();
 
     this.unpack25519(x, p);
+
     for (i = 0; i < 16; i++) {
       b[i] = x[i];
       d[i] = a[i] = c[i] = 0;
     }
+
     a[0] = d[0] = 1;
+
     for (i = 254; i >= 0; --i) {
       r = (s[i >>> 3] >>> (i & 7)) & 1;
       this.sel25519(a, b, r);
@@ -805,14 +855,17 @@ export class Curve25519 {
       this.sel25519(a, b, r);
       this.sel25519(c, d, r);
     }
+
     for (i = 0; i < 16; i++) {
       x[i + 16] = a[i];
       x[i + 32] = c[i];
       x[i + 48] = b[i];
       x[i + 64] = d[i];
     }
+
     let x32 = x.subarray(32);
     let x16 = x.subarray(16);
+
     this.inv25519(x32, x32);
     this.M(x16, x16, x32);
     this.pack25519(q, x16);
@@ -826,7 +879,9 @@ export class Curve25519 {
    */
   scalarMult(sk: Uint8Array, pk: Uint8Array): Uint8Array {
     let q = new Uint8Array(32);
+
     this.crypto_scalarmult(q, sk, pk);
+
     return q;
   }
 
@@ -838,6 +893,7 @@ export class Curve25519 {
   generateKeys(seed: Uint8Array): { sk: Uint8Array; pk: Uint8Array } {
     let sk = seed.slice();
     let pk = new Uint8Array(32);
+
     if (sk.length !== 32) {
       return;
     }
@@ -849,7 +905,8 @@ export class Curve25519 {
     sk[31] |= 0x40;
 
     this.crypto_scalarmult(pk, sk, this._9);
-    return { sk: sk, pk: pk };
+
+    return { sk, pk };
   }
 
   /**
@@ -867,6 +924,7 @@ export class Curve25519 {
         pk: "de9edb7d7b7dc1b4d35b61c2ece435373f8343c85b78674dadfc7e146f882b4f"
       }
     ];
+
     const mul = [
       {
         sk: "0300000000000000000000000000000000000000000000000000000000000000",
@@ -882,18 +940,25 @@ export class Curve25519 {
 
     // key generation
     let sk, pk, sp;
+
     for (let i = 0, len = key.length; i < len; i++) {
-      sk = hex2bin(key[i].sk);
-      pk = hex2bin(key[i].pk);
-      if (!compare(this.generateKeys(sk).pk, pk)) return false;
+      sk = encode(key[i].sk, "hex");
+      pk = encode(key[i].pk, "hex");
+
+      if (!equal(this.generateKeys(sk).pk, pk)) {
+        return false;
+      }
     }
 
     // scalar multiplication
     for (let i = 0, len = mul.length; i < len; i++) {
-      sk = hex2bin(mul[i].sk);
-      pk = hex2bin(mul[i].pk);
-      sp = hex2bin(mul[i].sp);
-      if (!compare(this.scalarMult(sk, pk), sp)) return false;
+      sk = encode(mul[i].sk, "hex");
+      pk = encode(mul[i].pk, "hex");
+      sp = encode(mul[i].sp, "hex");
+
+      if (!equal(this.scalarMult(sk, pk), sp)) {
+        return false;
+      }
     }
 
     return true;
