@@ -1,12 +1,12 @@
 import {
   runIfMain,
   test
-} from "https://deno.land/x/testing/mod.ts";
+} from "https://deno.land/std/testing/mod.ts";
 
 import {
   assert,
   assertEquals
-} from "https://deno.land/x/testing/asserts.ts";
+} from "https://deno.land/std/testing/asserts.ts";
 
 import { Curve25519 } from "./mod.ts";
 
