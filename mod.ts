@@ -872,15 +872,15 @@ export class Curve25519 {
   }
 
   /**
-   * Generate the common key as the produkt of sk1 * pk2
-   * @param {Uint8Array} sk A 32 byte secret key of pair 1
-   * @param {Uint8Array} pk A 32 byte public key of pair 2
-   * @return {Uint8Array} sk * pk
+   * Generate the common key as the produkt of secretKey1 * publicKey2
+   * @param {Uint8Array} secretKey A 32 byte secret key of pair 1
+   * @param {Uint8Array} publicKey A 32 byte public key of pair 2
+   * @return {Uint8Array} secretKey * publicKey
    */
-  scalarMult(sk: Uint8Array, pk: Uint8Array): Uint8Array {
+  scalarMult(secretKey: Uint8Array, publicKey: Uint8Array): Uint8Array {
     let q = new Uint8Array(32);
 
-    this.crypto_scalarmult(q, sk, pk);
+    this.crypto_scalarmult(q, secretKey, publicKey);
 
     return q;
   }
@@ -888,25 +888,25 @@ export class Curve25519 {
   /**
    * Generate a curve 25519 keypair
    * @param {Uint8Array} seed A 32 byte cryptographic secure random array. This is basically the secret key
-   * @param {Object} Returns sk (Secret key) and pk (Public key) as 32 byte typed arrays
+   * @param {Object} Returns secretKey (Secret key) and publicKey (Public key) as 32 byte typed arrays
    */
-  generateKeys(seed: Uint8Array): { sk: Uint8Array; pk: Uint8Array } {
-    let sk = seed.slice();
-    let pk = new Uint8Array(32);
+  generateKeys(seed: Uint8Array): { secretKey: Uint8Array; publicKey: Uint8Array } {
+    let secretKey = seed.slice();
+    let publicKey = new Uint8Array(32);
 
-    if (sk.length !== 32) {
+    if (secretKey.length !== 32) {
       return;
     }
 
     // harden the secret key by clearing bit 0, 1, 2, 255 and setting bit 254
     // clearing the lower 3 bits of the secret key ensures that is it a multiple of 8
-    sk[0] &= 0xf8;
-    sk[31] &= 0x7f;
-    sk[31] |= 0x40;
+    secretKey[0] &= 0xf8;
+    secretKey[31] &= 0x7f;
+    secretKey[31] |= 0x40;
 
-    this.crypto_scalarmult(pk, sk, this._9);
+    this.crypto_scalarmult(publicKey, secretKey, this._9);
 
-    return { sk, pk };
+    return { secretKey, publicKey };
   }
 
   /**
@@ -916,47 +916,47 @@ export class Curve25519 {
   selftest(): boolean {
     const key = [
       {
-        sk: "77076d0a7318a57d3c16c17251b26645df4c2f87ebc0992ab177fba51db92c2a",
-        pk: "8520f0098930a754748b7ddcb43ef75a0dbf3a0d26381af4eba4a98eaa9b4e6a"
+        secretKey: "77076d0a7318a57d3c16c17251b26645df4c2f87ebc0992ab177fba51db92c2a",
+        publicKey: "8520f0098930a754748b7ddcb43ef75a0dbf3a0d26381af4eba4a98eaa9b4e6a"
       },
       {
-        sk: "5dab087e624a8a4b79e17f8b83800ee66f3bb1292618b6fd1c2f8b27ff88e0eb",
-        pk: "de9edb7d7b7dc1b4d35b61c2ece435373f8343c85b78674dadfc7e146f882b4f"
+        secretKey: "5dab087e624a8a4b79e17f8b83800ee66f3bb1292618b6fd1c2f8b27ff88e0eb",
+        publicKey: "de9edb7d7b7dc1b4d35b61c2ece435373f8343c85b78674dadfc7e146f882b4f"
       }
     ];
 
     const mul = [
       {
-        sk: "0300000000000000000000000000000000000000000000000000000000000000",
-        pk: "0900000000000000000000000000000000000000000000000000000000000000",
+        secretKey: "0300000000000000000000000000000000000000000000000000000000000000",
+        publicKey: "0900000000000000000000000000000000000000000000000000000000000000",
         sp: "123c71fbaf030ac059081c62674e82f864ba1bc2914d5345e6ab576d1abc121c"
       },
       {
-        sk: "847c4978577d530dcb491d58bcc9cba87f9e075e6e02c003f27aee503cecb641",
-        pk: "57faa45404f10f1e4733047eca8f2f3001c12aa859e40d74cf59afaabe441d45",
+        secretKey: "847c4978577d530dcb491d58bcc9cba87f9e075e6e02c003f27aee503cecb641",
+        publicKey: "57faa45404f10f1e4733047eca8f2f3001c12aa859e40d74cf59afaabe441d45",
         sp: "b3c49b94dcc349ba05ca13521e19d1b93fc472f1545bbf9bdf7ec7b442be4a2c"
       }
     ];
 
     // key generation
-    let sk, pk, sp;
+    let secretKey, publicKey, sp;
 
     for (let i = 0, len = key.length; i < len; i++) {
-      sk = encode(key[i].sk, "hex");
-      pk = encode(key[i].pk, "hex");
+      secretKey = encode(key[i].secretKey, "hex");
+      publicKey = encode(key[i].publicKey, "hex");
 
-      if (!equal(this.generateKeys(sk).pk, pk)) {
+      if (!equal(this.generateKeys(secretKey).publicKey, publicKey)) {
         return false;
       }
     }
 
     // scalar multiplication
     for (let i = 0, len = mul.length; i < len; i++) {
-      sk = encode(mul[i].sk, "hex");
-      pk = encode(mul[i].pk, "hex");
+      secretKey = encode(mul[i].secretKey, "hex");
+      publicKey = encode(mul[i].publicKey, "hex");
       sp = encode(mul[i].sp, "hex");
 
-      if (!equal(this.scalarMult(sk, pk), sp)) {
+      if (!equal(this.scalarMult(secretKey, publicKey), sp)) {
         return false;
       }
     }

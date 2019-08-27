@@ -13,8 +13,8 @@ import { Curve25519 } from "./mod.ts";
 interface party {
   curve: Curve25519;
   seed: Uint8Array;
-  sk?: Uint8Array;
-  pk?: Uint8Array;
+  secretKey?: Uint8Array;
+  publicKey?: Uint8Array;
   shared?: Uint8Array;
 }
 
@@ -44,8 +44,8 @@ test({
     Object.assign(b, b.curve.generateKeys(b.seed));
     
     // deriving the shared secret
-    a.shared = a.curve.scalarMult(a.sk, b.pk);
-    b.shared = b.curve.scalarMult(b.sk, a.pk);
+    a.shared = a.curve.scalarMult(a.secretKey, b.publicKey);
+    b.shared = b.curve.scalarMult(b.secretKey, a.publicKey);
     
     // assert same shared secret
     assert(!!a.shared && !!b.shared); // assert truthiness
