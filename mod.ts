@@ -1,4 +1,4 @@
-import { encode } from "https://denopkg.com/chiefbiiko/std-encoding/mod.ts";
+import { encode } from "./deps.ts";
 
 /** Hopefully a somewhat timing-attack-robust buffer equality check. */
 export function constantTimeEqual(a: Uint8Array, b: Uint8Array): boolean {
@@ -114,54 +114,19 @@ export class Curve25519 {
   private M(o: Int32Array, a: Int32Array, b: Int32Array): void {
     // performance: using discrete vars instead of an array and
     // avoidance of 'for' loops here increases performance by factor 3
-    let v: number,
-      c: number,
-      t0: number = 0,
-      t1: number = 0,
-      t2: number = 0,
-      t3: number = 0,
-      t4: number = 0,
-      t5: number = 0,
-      t6: number = 0,
-      t7: number = 0,
-      t8: number = 0,
-      t9: number = 0,
-      t10: number = 0,
-      t11: number = 0,
-      t12: number = 0,
-      t13: number = 0,
-      t14: number = 0,
-      t15: number = 0,
-      t16: number = 0,
-      t17: number = 0,
-      t18: number = 0,
-      t19: number = 0,
-      t20: number = 0,
-      t21: number = 0,
-      t22: number = 0,
-      t23: number = 0,
-      t24: number = 0,
-      t25: number = 0,
-      t26: number = 0,
-      t27: number = 0,
-      t28: number = 0,
-      t29: number = 0,
-      t30: number = 0,
-      b0: number = b[0],
-      b1: number = b[1],
-      b2: number = b[2],
-      b3: number = b[3],
-      b4: number = b[4],
-      b5: number = b[5],
-      b6: number = b[6],
-      b7: number = b[7],
-      b8: number = b[8],
-      b9: number = b[9],
-      b10: number = b[10],
-      b11: number = b[11],
-      b12: number = b[12],
-      b13: number = b[13],
-      b14: number = b[14],
+    let v: number, c: number, t0: number = 0, t1: number = 0, t2: number = 0,
+      t3: number = 0, t4: number = 0, t5: number = 0, t6: number = 0,
+      t7: number = 0, t8: number = 0, t9: number = 0, t10: number = 0,
+      t11: number = 0, t12: number = 0, t13: number = 0, t14: number = 0,
+      t15: number = 0, t16: number = 0, t17: number = 0, t18: number = 0,
+      t19: number = 0, t20: number = 0, t21: number = 0, t22: number = 0,
+      t23: number = 0, t24: number = 0, t25: number = 0, t26: number = 0,
+      t27: number = 0, t28: number = 0, t29: number = 0, t30: number = 0,
+      b0: number = b[0], b1: number = b[1], b2: number = b[2],
+      b3: number = b[3], b4: number = b[4], b5: number = b[5],
+      b6: number = b[6], b7: number = b[7], b8: number = b[8],
+      b9: number = b[9], b10: number = b[10], b11: number = b[11],
+      b12: number = b[12], b13: number = b[13], b14: number = b[14],
       b15: number = b[15];
 
     v = a[0];
@@ -581,14 +546,10 @@ export class Curve25519 {
   }
 
   private add(p: Array<Int32Array>, q: Array<Int32Array>): void {
-    let a: Int32Array = this.gf(),
-      b: Int32Array = this.gf(),
-      c: Int32Array = this.gf(),
-      d: Int32Array = this.gf(),
-      e: Int32Array = this.gf(),
-      f: Int32Array = this.gf(),
-      g: Int32Array = this.gf(),
-      h: Int32Array = this.gf(),
+    let a: Int32Array = this.gf(), b: Int32Array = this.gf(),
+      c: Int32Array = this.gf(), d: Int32Array = this.gf(),
+      e: Int32Array = this.gf(), f: Int32Array = this.gf(),
+      g: Int32Array = this.gf(), h: Int32Array = this.gf(),
       t: Int32Array = this.gf();
 
     this.Z(a, p[1], p[0]);
@@ -618,9 +579,7 @@ export class Curve25519 {
   }
 
   private car25519(o: Int32Array): void {
-    let i: number,
-      v: number,
-      c: number = 1;
+    let i: number, v: number, c: number = 1;
 
     for (i = 0; i < 16; i++) {
       v = o[i] + c + 65535;
@@ -633,9 +592,7 @@ export class Curve25519 {
 
   private sel25519(p: Int32Array, q: Int32Array, b: number): void {
     // b is 0 or 1
-    let i: number,
-      t: number,
-      c: number = ~(b - 1);
+    let i: number, t: number, c: number = ~(b - 1);
 
     for (i = 0; i < 16; i++) {
       t = c & (p[i] ^ q[i]);
@@ -645,8 +602,7 @@ export class Curve25519 {
   }
 
   private inv25519(o: Int32Array, i: Int32Array): void {
-    let a: number,
-      c: Int32Array = this.gf();
+    let a: number, c: Int32Array = this.gf();
 
     for (a = 0; a < 16; a++) {
       c[a] = i[a];
@@ -666,8 +622,7 @@ export class Curve25519 {
   }
 
   private neq25519(a: Int32Array, b: Int32Array): boolean {
-    let c: Uint8Array = new Uint8Array(32),
-      d: Uint8Array = new Uint8Array(32);
+    let c: Uint8Array = new Uint8Array(32), d: Uint8Array = new Uint8Array(32);
 
     this.pack25519(c, a);
     this.pack25519(d, b);
@@ -684,8 +639,7 @@ export class Curve25519 {
   }
 
   private pow2523(o: Int32Array, i: Int32Array): void {
-    let a: number,
-      c: Int32Array = this.gf();
+    let a: number, c: Int32Array = this.gf();
 
     for (a = 0; a < 16; a++) {
       c[a] = i[a];
@@ -711,9 +665,7 @@ export class Curve25519 {
   }
 
   private pack25519(o: Uint8Array, n: Int32Array): void {
-    let i: number,
-      j: number,
-      m: Int32Array = this.gf(),
+    let i: number, j: number, m: Int32Array = this.gf(),
       t: Int32Array = this.gf();
 
     for (i = 0; i < 16; i++) {
@@ -754,12 +706,9 @@ export class Curve25519 {
   }
 
   private unpackNeg(r: Array<Int32Array>, p: Uint8Array): number {
-    let t: Int32Array = this.gf(),
-      chk: Int32Array = this.gf(),
-      num: Int32Array = this.gf(),
-      den: Int32Array = this.gf(),
-      den2: Int32Array = this.gf(),
-      den4: Int32Array = this.gf(),
+    let t: Int32Array = this.gf(), chk: Int32Array = this.gf(),
+      num: Int32Array = this.gf(), den: Int32Array = this.gf(),
+      den2: Int32Array = this.gf(), den4: Int32Array = this.gf(),
       den6: Int32Array = this.gf();
 
     this.set25519(r[2], this.gf1);
@@ -804,16 +753,15 @@ export class Curve25519 {
     return 0;
   }
 
-  private crypto_scalarmult(q: Uint8Array, s: Uint8Array, p: Uint8Array): void {
-    let x: Int32Array = new Int32Array(80),
-      a: Int32Array = this.gf(),
-      b: Int32Array = this.gf(),
-      c: Int32Array = this.gf(),
-      d: Int32Array = this.gf(),
-      e: Int32Array = this.gf(),
-      f: Int32Array = this.gf(),
-      r: number,
-      i: number;
+  private crypto_scalarmult(
+    q: Uint8Array,
+    s: Uint8Array,
+    p: Uint8Array
+  ): void {
+    let x: Int32Array = new Int32Array(80), a: Int32Array = this.gf(),
+      b: Int32Array = this.gf(), c: Int32Array = this.gf(),
+      d: Int32Array = this.gf(), e: Int32Array = this.gf(),
+      f: Int32Array = this.gf(), r: number, i: number;
 
     this.unpack25519(x, p);
 
@@ -872,7 +820,7 @@ export class Curve25519 {
    * publicKey must be a 32 byte public key of pair 2
    * Returns secretKey * publicKey
    */
-  scalarMult(secretKey: Uint8Array, publicKey: Uint8Array): Uint8Array {
+  public scalarMult(secretKey: Uint8Array, publicKey: Uint8Array): Uint8Array {
     let q: Uint8Array = new Uint8Array(32);
 
     this.crypto_scalarmult(q, secretKey, publicKey);
@@ -886,9 +834,9 @@ export class Curve25519 {
    * seed is a 32 byte cryptographic secure random array. This is basically the secret key
    * Returns an object containing a secret and public key as 32 byte typed arrays
    */
-  generateKeys(
+  public generateKeys(
     seed: Uint8Array
-  ): { secretKey: Uint8Array; publicKey: Uint8Array } {
+  ): null | { secretKey: Uint8Array; publicKey: Uint8Array } {
     if (seed.byteLength !== 32) {
       return null;
     }
@@ -907,7 +855,7 @@ export class Curve25519 {
     return { secretKey, publicKey };
   }
 
-  selftest(): boolean {
+  public selftest(): boolean {
     const key = [
       {
         secretKey:
@@ -948,7 +896,7 @@ export class Curve25519 {
       publicKey = encode(key[i].publicKey, "hex");
 
       if (
-        !constantTimeEqual(this.generateKeys(secretKey).publicKey, publicKey)
+        !constantTimeEqual(this.generateKeys(secretKey)!.publicKey, publicKey)
       ) {
         return false;
       }

@@ -1,5 +1,8 @@
-import { runIfMain, test } from "https://deno.land/std/testing/mod.ts";
-import { assert, assertEquals } from "https://deno.land/std/testing/asserts.ts";
+import {
+  assert,
+  assertEquals
+} from "https://deno.land/std@v0.35.0/testing/asserts.ts";
+
 import { Curve25519 } from "./mod.ts";
 
 interface Party {
@@ -10,14 +13,14 @@ interface Party {
   shared?: Uint8Array;
 }
 
-test({
+Deno.test({
   name: "self",
   fn() {
     assert(new Curve25519().selftest());
   }
 });
 
-test({
+Deno.test({
   name: "x25519",
   fn() {
     // alice and bob
@@ -36,13 +39,10 @@ test({
     Object.assign(b, b.curve.generateKeys(b.seed));
 
     // deriving the shared secret
-    a.shared = a.curve.scalarMult(a.secretKey, b.publicKey);
-    b.shared = b.curve.scalarMult(b.secretKey, a.publicKey);
+    a.shared = a.curve.scalarMult(a.secretKey!, b.publicKey!);
+    b.shared = b.curve.scalarMult(b.secretKey!, a.publicKey!);
 
     // assert same shared secret
-    assert(!!a.shared && !!b.shared); // assert truthiness
     assertEquals(a.shared, b.shared);
   }
 });
-
-runIfMain(import.meta, { parallel: true });
