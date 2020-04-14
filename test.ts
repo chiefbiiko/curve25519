@@ -46,3 +46,5 @@ Deno.test({
     assertEquals(a.shared, b.shared);
   }
 });
+
+Deno.runTests();
