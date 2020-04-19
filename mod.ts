@@ -45,7 +45,7 @@ export class Curve25519 {
       0xfe73,
       0x2b6f,
       0x6cee,
-      0x5203
+      0x5203,
     ]);
 
     this.D2 = this.gf([
@@ -64,7 +64,7 @@ export class Curve25519 {
       0xfce7,
       0x56df,
       0xd9dc,
-      0x2406
+      0x2406,
     ]);
 
     this.I = this.gf([
@@ -83,11 +83,11 @@ export class Curve25519 {
       0xdf0b,
       0x4fc1,
       0x2480,
-      0x2b83
+      0x2b83,
     ]);
   }
 
-  private gf(init?: Array<number>): Int32Array {
+  public gf(init?: Array<number>): Int32Array {
     const r: Int32Array = new Int32Array(16);
 
     if (init) {
@@ -97,36 +97,71 @@ export class Curve25519 {
     return r;
   }
 
-  private A(o: Int32Array, a: Int32Array, b: Int32Array): void {
+  public A(o: Int32Array, a: Int32Array, b: Int32Array): void {
     // using 'for' loop is faster as 'map' in 2018-01
     for (let i: number = 0; i < 16; i++) {
       o[i] = a[i] + b[i];
     }
   }
 
-  private Z(o: Int32Array, a: Int32Array, b: Int32Array): void {
+  public Z(o: Int32Array, a: Int32Array, b: Int32Array): void {
     // using 'for' loop is faster as 'map' in 2018-01
     for (let i: number = 0; i < 16; i++) {
       o[i] = a[i] - b[i];
     }
   }
 
-  private M(o: Int32Array, a: Int32Array, b: Int32Array): void {
+  public M(o: Int32Array, a: Int32Array, b: Int32Array): void {
     // performance: using discrete vars instead of an array and
     // avoidance of 'for' loops here increases performance by factor 3
-    let v: number, c: number, t0: number = 0, t1: number = 0, t2: number = 0,
-      t3: number = 0, t4: number = 0, t5: number = 0, t6: number = 0,
-      t7: number = 0, t8: number = 0, t9: number = 0, t10: number = 0,
-      t11: number = 0, t12: number = 0, t13: number = 0, t14: number = 0,
-      t15: number = 0, t16: number = 0, t17: number = 0, t18: number = 0,
-      t19: number = 0, t20: number = 0, t21: number = 0, t22: number = 0,
-      t23: number = 0, t24: number = 0, t25: number = 0, t26: number = 0,
-      t27: number = 0, t28: number = 0, t29: number = 0, t30: number = 0,
-      b0: number = b[0], b1: number = b[1], b2: number = b[2],
-      b3: number = b[3], b4: number = b[4], b5: number = b[5],
-      b6: number = b[6], b7: number = b[7], b8: number = b[8],
-      b9: number = b[9], b10: number = b[10], b11: number = b[11],
-      b12: number = b[12], b13: number = b[13], b14: number = b[14],
+    let v: number,
+      c: number,
+      t0: number = 0,
+      t1: number = 0,
+      t2: number = 0,
+      t3: number = 0,
+      t4: number = 0,
+      t5: number = 0,
+      t6: number = 0,
+      t7: number = 0,
+      t8: number = 0,
+      t9: number = 0,
+      t10: number = 0,
+      t11: number = 0,
+      t12: number = 0,
+      t13: number = 0,
+      t14: number = 0,
+      t15: number = 0,
+      t16: number = 0,
+      t17: number = 0,
+      t18: number = 0,
+      t19: number = 0,
+      t20: number = 0,
+      t21: number = 0,
+      t22: number = 0,
+      t23: number = 0,
+      t24: number = 0,
+      t25: number = 0,
+      t26: number = 0,
+      t27: number = 0,
+      t28: number = 0,
+      t29: number = 0,
+      t30: number = 0,
+      b0: number = b[0],
+      b1: number = b[1],
+      b2: number = b[2],
+      b3: number = b[3],
+      b4: number = b[4],
+      b5: number = b[5],
+      b6: number = b[6],
+      b7: number = b[7],
+      b8: number = b[8],
+      b9: number = b[9],
+      b10: number = b[10],
+      b11: number = b[11],
+      b12: number = b[12],
+      b13: number = b[13],
+      b14: number = b[14],
       b15: number = b[15];
 
     v = a[0];
@@ -541,15 +576,19 @@ export class Curve25519 {
     o[15] = t15;
   }
 
-  private S(o: Int32Array, a: Int32Array): void {
+  public S(o: Int32Array, a: Int32Array): void {
     this.M(o, a, a);
   }
 
-  private add(p: Array<Int32Array>, q: Array<Int32Array>): void {
-    let a: Int32Array = this.gf(), b: Int32Array = this.gf(),
-      c: Int32Array = this.gf(), d: Int32Array = this.gf(),
-      e: Int32Array = this.gf(), f: Int32Array = this.gf(),
-      g: Int32Array = this.gf(), h: Int32Array = this.gf(),
+  public add(p: Array<Int32Array>, q: Array<Int32Array>): void {
+    let a: Int32Array = this.gf(),
+      b: Int32Array = this.gf(),
+      c: Int32Array = this.gf(),
+      d: Int32Array = this.gf(),
+      e: Int32Array = this.gf(),
+      f: Int32Array = this.gf(),
+      g: Int32Array = this.gf(),
+      h: Int32Array = this.gf(),
       t: Int32Array = this.gf();
 
     this.Z(a, p[1], p[0]);
@@ -572,13 +611,13 @@ export class Curve25519 {
     this.M(p[3], e, h);
   }
 
-  private set25519(r: Int32Array, a: Int32Array): void {
+  public set25519(r: Int32Array, a: Int32Array): void {
     for (let i: number = 0; i < 16; i++) {
       r[i] = a[i];
     }
   }
 
-  private car25519(o: Int32Array): void {
+  public car25519(o: Int32Array): void {
     let i: number, v: number, c: number = 1;
 
     for (i = 0; i < 16; i++) {
@@ -590,7 +629,7 @@ export class Curve25519 {
     o[0] += c - 1 + 37 * (c - 1);
   }
 
-  private sel25519(p: Int32Array, q: Int32Array, b: number): void {
+  public sel25519(p: Int32Array, q: Int32Array, b: number): void {
     // b is 0 or 1
     let i: number, t: number, c: number = ~(b - 1);
 
@@ -601,7 +640,7 @@ export class Curve25519 {
     }
   }
 
-  private inv25519(o: Int32Array, i: Int32Array): void {
+  public inv25519(o: Int32Array, i: Int32Array): void {
     let a: number, c: Int32Array = this.gf();
 
     for (a = 0; a < 16; a++) {
@@ -621,7 +660,7 @@ export class Curve25519 {
     }
   }
 
-  private neq25519(a: Int32Array, b: Int32Array): boolean {
+  public neq25519(a: Int32Array, b: Int32Array): boolean {
     let c: Uint8Array = new Uint8Array(32), d: Uint8Array = new Uint8Array(32);
 
     this.pack25519(c, a);
@@ -630,7 +669,7 @@ export class Curve25519 {
     return !constantTimeEqual(c, d);
   }
 
-  private par25519(a: Int32Array): number {
+  public par25519(a: Int32Array): number {
     let d: Uint8Array = new Uint8Array(32);
 
     this.pack25519(d, a);
@@ -638,7 +677,7 @@ export class Curve25519 {
     return d[0] & 1;
   }
 
-  private pow2523(o: Int32Array, i: Int32Array): void {
+  public pow2523(o: Int32Array, i: Int32Array): void {
     let a: number, c: Int32Array = this.gf();
 
     for (a = 0; a < 16; a++) {
@@ -658,14 +697,16 @@ export class Curve25519 {
     }
   }
 
-  private cswap(p: Array<Int32Array>, q: Array<Int32Array>, b: number): void {
+  public cswap(p: Array<Int32Array>, q: Array<Int32Array>, b: number): void {
     for (let i: number = 0; i < 4; i++) {
       this.sel25519(p[i], q[i], b);
     }
   }
 
-  private pack25519(o: Uint8Array, n: Int32Array): void {
-    let i: number, j: number, m: Int32Array = this.gf(),
+  public pack25519(o: Uint8Array, n: Int32Array): void {
+    let i: number,
+      j: number,
+      m: Int32Array = this.gf(),
       t: Int32Array = this.gf();
 
     for (i = 0; i < 16; i++) {
@@ -697,7 +738,7 @@ export class Curve25519 {
     }
   }
 
-  private unpack25519(o: Int32Array, n: Uint8Array): void {
+  public unpack25519(o: Int32Array, n: Uint8Array): void {
     for (let i: number = 0; i < 16; i++) {
       o[i] = n[2 * i] + (n[2 * i + 1] << 8);
     }
@@ -705,10 +746,13 @@ export class Curve25519 {
     o[15] &= 0x7fff;
   }
 
-  private unpackNeg(r: Array<Int32Array>, p: Uint8Array): number {
-    let t: Int32Array = this.gf(), chk: Int32Array = this.gf(),
-      num: Int32Array = this.gf(), den: Int32Array = this.gf(),
-      den2: Int32Array = this.gf(), den4: Int32Array = this.gf(),
+  public unpackNeg(r: Array<Int32Array>, p: Uint8Array): number {
+    let t: Int32Array = this.gf(),
+      chk: Int32Array = this.gf(),
+      num: Int32Array = this.gf(),
+      den: Int32Array = this.gf(),
+      den2: Int32Array = this.gf(),
+      den4: Int32Array = this.gf(),
       den6: Int32Array = this.gf();
 
     this.set25519(r[2], this.gf1);
@@ -753,15 +797,20 @@ export class Curve25519 {
     return 0;
   }
 
-  private crypto_scalarmult(
+  public crypto_scalarmult(
     q: Uint8Array,
     s: Uint8Array,
-    p: Uint8Array
+    p: Uint8Array,
   ): void {
-    let x: Int32Array = new Int32Array(80), a: Int32Array = this.gf(),
-      b: Int32Array = this.gf(), c: Int32Array = this.gf(),
-      d: Int32Array = this.gf(), e: Int32Array = this.gf(),
-      f: Int32Array = this.gf(), r: number, i: number;
+    let x: Int32Array = new Int32Array(80),
+      a: Int32Array = this.gf(),
+      b: Int32Array = this.gf(),
+      c: Int32Array = this.gf(),
+      d: Int32Array = this.gf(),
+      e: Int32Array = this.gf(),
+      f: Int32Array = this.gf(),
+      r: number,
+      i: number;
 
     this.unpack25519(x, p);
 
@@ -835,7 +884,7 @@ export class Curve25519 {
    * Returns an object containing a secret and public key as 32 byte typed arrays
    */
   public generateKeys(
-    seed: Uint8Array
+    seed: Uint8Array,
   ): null | { secretKey: Uint8Array; publicKey: Uint8Array } {
     if (seed.byteLength !== 32) {
       return null;
@@ -861,14 +910,14 @@ export class Curve25519 {
         secretKey:
           "77076d0a7318a57d3c16c17251b26645df4c2f87ebc0992ab177fba51db92c2a",
         publicKey:
-          "8520f0098930a754748b7ddcb43ef75a0dbf3a0d26381af4eba4a98eaa9b4e6a"
+          "8520f0098930a754748b7ddcb43ef75a0dbf3a0d26381af4eba4a98eaa9b4e6a",
       },
       {
         secretKey:
           "5dab087e624a8a4b79e17f8b83800ee66f3bb1292618b6fd1c2f8b27ff88e0eb",
         publicKey:
-          "de9edb7d7b7dc1b4d35b61c2ece435373f8343c85b78674dadfc7e146f882b4f"
-      }
+          "de9edb7d7b7dc1b4d35b61c2ece435373f8343c85b78674dadfc7e146f882b4f",
+      },
     ];
 
     const mul = [
@@ -877,15 +926,15 @@ export class Curve25519 {
           "0300000000000000000000000000000000000000000000000000000000000000",
         publicKey:
           "0900000000000000000000000000000000000000000000000000000000000000",
-        sp: "123c71fbaf030ac059081c62674e82f864ba1bc2914d5345e6ab576d1abc121c"
+        sp: "123c71fbaf030ac059081c62674e82f864ba1bc2914d5345e6ab576d1abc121c",
       },
       {
         secretKey:
           "847c4978577d530dcb491d58bcc9cba87f9e075e6e02c003f27aee503cecb641",
         publicKey:
           "57faa45404f10f1e4733047eca8f2f3001c12aa859e40d74cf59afaabe441d45",
-        sp: "b3c49b94dcc349ba05ca13521e19d1b93fc472f1545bbf9bdf7ec7b442be4a2c"
-      }
+        sp: "b3c49b94dcc349ba05ca13521e19d1b93fc472f1545bbf9bdf7ec7b442be4a2c",
+      },
     ];
 
     // key generation

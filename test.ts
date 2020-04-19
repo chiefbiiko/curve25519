@@ -1,6 +1,6 @@
 import {
   assert,
-  assertEquals
+  assertEquals,
 } from "https://deno.land/std@v0.35.0/testing/asserts.ts";
 
 import { Curve25519 } from "./mod.ts";
@@ -17,7 +17,7 @@ Deno.test({
   name: "self",
   fn() {
     assert(new Curve25519().selftest());
-  }
+  },
 });
 
 Deno.test({
@@ -26,12 +26,12 @@ Deno.test({
     // alice and bob
     const a: Party = {
       curve: new Curve25519(),
-      seed: new TextEncoder().encode("deadbeefdeadbeefdeadbeefdeadbeef")
+      seed: new TextEncoder().encode("deadbeefdeadbeefdeadbeefdeadbeef"),
     };
 
     const b: Party = {
       curve: new Curve25519(),
-      seed: a.seed.map((byte: number) => byte - 1)
+      seed: a.seed.map((byte: number) => byte - 1),
     };
 
     // generating their keypairs
@@ -44,5 +44,5 @@ Deno.test({
 
     // assert same shared secret
     assertEquals(a.shared, b.shared);
-  }
+  },
 });
